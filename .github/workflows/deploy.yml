@@ -1,0 +1,35 @@
+name: Deploy Virtual-Scroll
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Deploy to Server via SSH
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            cd /var/www/projects
+            if [ ! -d "virtual-scroll" ]; then
+              git clone https://github.com/hamedor/virtual-scroll.git virtual-scroll
+            else
+              cd virtual_scroll
+            
+              git pull
+            fi
+            cd virtual_scroll
+            npm install
+            npm run build
+            sudo systemctl reload nginx
