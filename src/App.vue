@@ -1,27 +1,48 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png">
-  <HelloWorld msg="Welcome to Your Vue.js + TypeScript App"/>
+  <div class="wrapper">
+    <VirtualScroll :total-items="totalItems" @load-more="loadMore">
+      <template #default="{ visibleItems, getItemStyle }">
+        <div
+            v-for="item in visibleItems"
+            :key="item"
+            class="item"
+            :style="getItemStyle(item)"
+        >
+          <span>Элемент {{ item + 1 }}</span>
+          <img src="@/assets/images.jpeg" alt="Item Image" loading="lazy" />
+        </div>
+      </template>
+    </VirtualScroll>
+  </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
-import HelloWorld from './components/HelloWorld.vue';
+<script setup>
+import { ref } from "vue";
+import VirtualScroll from "@/components/VirtualScroll.vue";
 
-export default defineComponent({
-  name: 'App',
-  components: {
-    HelloWorld
-  }
-});
+const initialItems = 10000;
+const loadAmount = 10000;
+
+const totalItems = ref(initialItems);
+
+const loadMore = () => {
+  totalItems.value += loadAmount;
+};
 </script>
 
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+<style scoped>
+.wrapper {
+  height: 90vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.item {
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  padding: 10px;
+  background-color: #f0f0f0;
+  border: 1px solid #ddd;
 }
 </style>
